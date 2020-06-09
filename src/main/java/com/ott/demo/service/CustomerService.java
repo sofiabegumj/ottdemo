@@ -1,6 +1,9 @@
 package com.ott.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,7 @@ public class CustomerService {
     private CustomerRepository customerRepository;
     
     @Transactional(readOnly = true)
+    @Cacheable(value = "customer", key = "#customerId")
     public Optional<Customer> getCustomerById(long customerId) {
     	return customerRepository.findById(customerId);
 	}
@@ -35,6 +39,7 @@ public class CustomerService {
         return customer;
     }
 
+    @CachePut(value = "customer", key = "#customer.id")
     public Optional<Customer> updateCustomer(Customer customer) {
         return Optional.of(customerRepository
             .findById(customer.getId()))
@@ -47,6 +52,7 @@ public class CustomerService {
             });
     }
 
+    @CacheEvict(value = "customer", allEntries=true)
     public void deleteCustomer(Long id) {
     	Optional<Customer> customer = getCustomerById(id);
     	if(customer.isPresent()) {

@@ -10,7 +10,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.ott.demo.models.Customer;
 import com.ott.demo.rest.error.UnAuthorizedException;
 import com.ott.demo.service.CustomerService;
-import com.ott.demo.utils.SecurityUtil;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -21,13 +20,6 @@ public class CustomerResource {
     
     @Autowired
     private CustomerService customerService;
-    
-    private void validateAuthorization(String basicAuth) {
-    	boolean check = SecurityUtil.isValidAuthorization(basicAuth);
-    	if(!check) {
-    		throw new UnAuthorizedException("Unauthorized Basic Auth");
-    	}
-    }
 
     /**
      * {@code GET /customer/id}.
@@ -35,8 +27,7 @@ public class CustomerResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)}.
      */
     @GetMapping("/customer/{id}")
-    public ResponseEntity<Customer> getCustomerByCustomerNumber(@RequestHeader("Authorization") String basicAuth, @PathVariable Long id) {
-    	validateAuthorization(basicAuth);
+    public ResponseEntity<Customer> getCustomerByCustomerNumber(@PathVariable Long id) {
     	Optional<Customer> customer = customerService.getCustomerById(id);
     	if(!customer.isPresent()) {
     		throw new UnAuthorizedException(String.format("The given customer id '%s' is not exist", id)  );
@@ -50,8 +41,7 @@ public class CustomerResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body all Customers.
      */
     @GetMapping("/customer")
-    public ResponseEntity<List<Customer>> getAllCustomers(@RequestHeader("Authorization") String basicAuth) {
-    	validateAuthorization(basicAuth);
+    public ResponseEntity<List<Customer>> getAllCustomers() {
     	List<Customer> customers = customerService.getAllCustomers();
         if(customers.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -66,12 +56,7 @@ public class CustomerResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new customer, or with status {@code 400 (Bad Request)} if the login or email is already in use.
      */
     @PostMapping("/customer")
-    public ResponseEntity<Customer> createCustomer(@RequestHeader("Authorization") String basicAuth, @Valid @RequestBody Customer customer, UriComponentsBuilder builder) {
-    	validateAuthorization(basicAuth);
-    	/*if (customerService.isCustomerExist(customer)) {
-            System.out.println("A Customer with name " + customer.getFirstName() + " already exist");
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }*/
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer, UriComponentsBuilder builder) {
     	Customer newCustomer = customerService.createCustomer(customer);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(builder.path("/customer/{id}").buildAndExpand(customer.getId()).toUri());
@@ -84,8 +69,7 @@ public class CustomerResource {
      * @param customer the customer to update.
      */
     @PutMapping("/customer")
-    public ResponseEntity<Customer> updateCustomer(@RequestHeader("Authorization") String basicAuth, @Valid @RequestBody Customer customer) {
-    	validateAuthorization(basicAuth);
+    public ResponseEntity<Customer> updateCustomer(@Valid @RequestBody Customer customer) {
     	Optional<Customer> curCustomer = customerService.getCustomerById(customer.getId());
         if (!curCustomer.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -107,8 +91,7 @@ public class CustomerResource {
      * @return ResponseEntity
      */
     @DeleteMapping("/customer/{id}")
-    public ResponseEntity<Void> deletePeople(@RequestHeader("Authorization") String basicAuth, @PathVariable Long id) {
-    	validateAuthorization(basicAuth);
+    public ResponseEntity<Void> deletePeople(@PathVariable Long id) {
     	Optional<Customer> customer = customerService.getCustomerById(id);
         if (!customer.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

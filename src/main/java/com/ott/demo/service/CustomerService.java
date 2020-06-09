@@ -1,7 +1,6 @@
 package com.ott.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ public class CustomerService {
     private CustomerRepository customerRepository;
     
     @Transactional(readOnly = true)
-    @Cacheable
     public Optional<Customer> getCustomerById(long customerId) {
     	return customerRepository.findById(customerId);
 	}

@@ -2,27 +2,21 @@ package com.ott.demo.rest;
 
 import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
 import java.util.Optional;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ott.demo.models.Customer;
 import com.ott.demo.service.CustomerService;
 
@@ -31,40 +25,46 @@ import com.ott.demo.service.CustomerService;
 public class CustomerResourceTest {
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	@MockBean
 	private CustomerResource customerResource;
 
 	@MockBean
 	private CustomerService customerService;
 
-	Optional<Customer> mockCustomer = Optional.of(new Customer("seven", "seven"));
-	
-	/*@Test
+	@Test
 	public void getCustomerById() throws Exception {
-		//Mockito.when(customerService.getCustomerById(Mockito.anyLong())).thenReturn(mockCustomer);
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
-				"/customer/1").accept(MediaType.APPLICATION_JSON);
+		Optional<Customer> mockCustomer = Optional.of(new Customer("one", "one"));
+		Mockito.when(customerService.getCustomerById(Mockito.anyLong())).thenReturn(mockCustomer);
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/customer/1").accept(MediaType.APPLICATION_JSON)
+		    .header("Authorization", "Basic dGVjaG5pY2FsOkFzc2Vzc21lbnQ=");
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 		int status = result.getResponse().getStatus();
-		assertEquals(404, status);
-		System.out.println(result.getResponse().getContentAsString());
-		String expected = "{id:4,firstName:three,lastName:three}";
-
-		//JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
+		assertEquals(200, status);
+		
+		String content = result.getResponse().getContentAsString();
+		String expected = "";
+		assertEquals(content, expected);
 	}
-	
-	@Test
-    public void testAddCustomer() 
-    {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-         
-        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-        Customer mockCustomer = new Customer("seven", "seven");
-        ResponseEntity<Customer> responseEntity = customerResource.createCustomer(mockCustomer, builder);
-         
-        assertEquals(201, responseEntity.getStatusCodeValue());
-    }*/
 
+	protected String mapToJson(Object obj) throws JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		return objectMapper.writeValueAsString(obj);
+	}
+
+	@Test
+	public void createCustomer() throws Exception {
+		Customer cus = new Customer("nine", "nine");
+		Mockito.when(customerService.createCustomer(cus)).thenReturn(cus);
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/customer")
+				.contentType(MediaType.APPLICATION_JSON).header("Authorization", "Basic dGVjaG5pY2FsOkFzc2Vzc21lbnQ=")
+				.content(mapToJson(cus));
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		int status = result.getResponse().getStatus();
+		assertEquals(200, status);
+		
+		String content = result.getResponse().getContentAsString();
+		String expected = "";
+		assertEquals(content, expected);
+	}
 }

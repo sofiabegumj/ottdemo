@@ -27,7 +27,8 @@ public class BasicAuthConfig extends WebSecurityConfigurerAdapter
     {
         http
          .csrf().disable()
-         .authorizeRequests().anyRequest().authenticated()
+         .authorizeRequests().antMatchers("/customer").permitAll()
+         .anyRequest().authenticated()
          .and()
          .httpBasic()
          .and()

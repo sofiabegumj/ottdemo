@@ -23,7 +23,7 @@ public class CustomerService {
     
     @Transactional(readOnly = true)
     @Cacheable(value = "customer", key = "#customerId")
-    public Optional<Customer> getCustomerById(long customerId) {
+    public Optional<Customer> getCustomerById(String customerId) {
     	return customerRepository.findById(customerId);
 	}
     
@@ -53,7 +53,7 @@ public class CustomerService {
     }
 
     @CacheEvict(value = "customer", allEntries=true)
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(String id) {
     	Optional<Customer> customer = getCustomerById(id);
     	if(customer.isPresent()) {
     		customerRepository.delete(customer.get());

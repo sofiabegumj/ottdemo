@@ -35,7 +35,7 @@ public class CustomerResourceTest {
 	@Test
 	public void getCustomerById() throws Exception {
 		Optional<Customer> mockCustomer = Optional.of(new Customer("one", "one"));
-		Mockito.when(customerService.getCustomerById(Mockito.anyLong())).thenReturn(mockCustomer);
+		Mockito.when(customerService.getCustomerById(Mockito.anyString())).thenReturn(mockCustomer);
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/customer/1").accept(MediaType.APPLICATION_JSON)
 		    .header("Authorization", "Basic dGVjaG5pY2FsOkFzc2Vzc21lbnQ=");
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();

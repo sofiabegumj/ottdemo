@@ -37,7 +37,7 @@ public class CustomerResource {
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)}.
 	 */
 	@GetMapping("/customer/{id}")
-	public ResponseEntity<Customer> getCustomerByCustomerNumber(@PathVariable Long id,
+	public ResponseEntity<Customer> getCustomerByCustomerNumber(@PathVariable String id,
 			@RequestHeader("Authorization") String basicAuth) {
 		validateAuthorization(basicAuth);
 		Optional<Customer> customer = customerService.getCustomerById(id);
@@ -113,7 +113,7 @@ public class CustomerResource {
 	 * @return ResponseEntity
 	 */
 	@DeleteMapping("/customer/{id}")
-	public ResponseEntity<Void> deletePeople(@PathVariable Long id, @RequestHeader("Authorization") String basicAuth) {
+	public ResponseEntity<Void> deletePeople(@PathVariable String id, @RequestHeader("Authorization") String basicAuth) {
 		validateAuthorization(basicAuth);
 		Optional<Customer> customer = customerService.getCustomerById(id);
 		if (!customer.isPresent()) {

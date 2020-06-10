@@ -2,19 +2,16 @@ package com.ott.demo.models;
 
 import java.io.Serializable;
 import java.util.Objects;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="customer")
 public class Customer implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private String id;
 	private String firstName;
 	private String lastName;
 
@@ -26,11 +23,11 @@ public class Customer implements Serializable {
 		this.lastName = lastName;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 	
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -67,6 +64,6 @@ public class Customer implements Serializable {
 	
 	@Override
 	public String toString() {
-		return String.format("Customer[id=%d, firstName='%s', lastName='%s']", id, firstName, lastName);
+		return String.format("Customer[id=%s, firstName='%s', lastName='%s']", id, firstName, lastName);
 	}
 }
